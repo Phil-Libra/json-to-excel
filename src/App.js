@@ -11,6 +11,8 @@ function App() {
   const [excelData, setExcelData] = useState({});
   // 设定文件名
   const [fileName, setFileName] = useState('');
+  // 设定下载按钮显示状态
+  const [dlStatus, setDLStatus] = useState(false);
 
   // JSON转换为excel函数
   const JSONtoExcel = (file) => {
@@ -57,15 +59,30 @@ function App() {
 
     // 设置上传的文件名为默认下载文件名
     const fileNameArray = files[0].name.split('.');
+
+    // 如果上传的文件只有扩展名，则加入默认的文件名'Workbook'
+    if (!fileNameArray[0]) {
+      fileNameArray.shift();
+      fileNameArray.unshift('Workbook');
+    }
+
     const fileName = fileNameArray.slice(0, fileNameArray.length - 1).join('.');
 
     setFileName(fileName);
 
     // 将表格转换为JSON数据
     JSONtoExcel(files[0]);
+
+    // 显示下载按钮
+    setDLStatus(true);
   };
 
-  const generateExcel = () => {
+  const getExcel = () => {
+    // 防止未生成数据时直接被点击导致报错
+    if (Object.keys(excelData).length === 0) {
+      return;
+    }
+
     XLSX.writeFile(excelData, `${fileName}.xlsx`);
   }
 
@@ -87,7 +104,7 @@ function App() {
       <fieldset id='file'>
         <legend>上传文件</legend>
         <input type="file" name="json-file" id="json-file" onChange={handleUpload} />
-        <button onClick={generateExcel}>下载工作表</button>
+        <button style={{ display: dlStatus ? '' : 'none' }} onClick={getExcel}>下载工作表</button>
       </fieldset>
 
       <fieldset>
