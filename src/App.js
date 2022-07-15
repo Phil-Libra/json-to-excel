@@ -4,18 +4,18 @@ import styles from './App.module.css';
 
 const XLSX = window.XLSX;
 
-function App() {
+const App = () => {
   // 要生成的网页表格内容
-  const [html, setHTML] = useState('');
+  const [html, setHTML] = useState();
   // 转换出来的JSON数据
-  const [excelData, setExcelData] = useState({});
+  const [excelData, setExcelData] = useState();
   // 设定文件名
-  const [fileName, setFileName] = useState('');
+  const [fileName, setFileName] = useState();
   // 设定下载按钮显示状态
   const [dlStatus, setDLStatus] = useState(false);
 
-  // JSON转换为excel函数
-  const JSONtoExcel = (file) => {
+  // JSON转换为表格函数
+  const JSONtoTable = (file) => {
     const fileReader = new FileReader();
 
     fileReader.onload = (e) => {
@@ -30,18 +30,16 @@ function App() {
         // 生成表格预览
         setHTML(XLSX.utils.sheet_to_html(sheetData));
 
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, sheetData, "Sheet1");
-        setExcelData(workbook);
+        // 生成表格数据
+        setExcelData(sheetData);
 
       } catch (e) {
         console.log(e);
-        alert('文件类型不正确');
         return;
       };
     };
 
-    // 以二进制方式打开文件
+    // 以文本格式打开文件
     fileReader.readAsText(file, 'UTF-8');
   };
 
@@ -58,32 +56,37 @@ function App() {
     }
 
     // 设置上传的文件名为默认下载文件名
-    const fileNameArray = files[0].name.split('.');
+    let fileNameArray = files[0].name.split('.');
 
-    // 如果上传的文件只有扩展名，则加入默认的文件名'Workbook'
+    // 如果上传的文件只有扩展名，则加入默认的文件名'workbook'
     if (!fileNameArray[0]) {
-      fileNameArray.shift();
-      fileNameArray.unshift('Workbook');
+      fileNameArray.splice(0, 1, 'workbook');
     }
 
     const fileName = fileNameArray.slice(0, fileNameArray.length - 1).join('.');
 
+    // 设置文件名state
     setFileName(fileName);
 
-    // 将表格转换为JSON数据
-    JSONtoExcel(files[0]);
+    // 将JSON数据转换为表格
+    JSONtoTable(files[0]);
 
     // 显示下载按钮
     setDLStatus(true);
   };
 
-  const getExcel = () => {
+  const handleDownload = () => {
     // 防止未生成数据时直接被点击导致报错
-    if (Object.keys(excelData).length === 0) {
+    if (!excelData) {
       return;
     }
 
-    XLSX.writeFile(excelData, `${fileName}.xlsx`);
+    // 生成工作表数据
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, excelData, "Sheet1");
+
+    // 生成文件并下载
+    XLSX.writeFile(workbook, `${fileName}.xlsx`);
   }
 
   return (
@@ -96,7 +99,7 @@ function App() {
         <br />
         <p>仅支持JSON文件上传。</p>
         <br />
-        <p>由于限制，暂时只支持key value为简单类型值的JSON，否则无法获取到相应的key value，且转换出的数据可能有bug。</p>
+        <p>由于限制，暂时只支持key value为简单数据类型的JSON，否则无法获取到相应的key value，且转换出的数据可能有bug。</p>
         <br />
         <p>暂时获取第一个子项的key为表头，不排除以后提供选择表头的功能。</p>
       </fieldset>
@@ -104,7 +107,7 @@ function App() {
       <fieldset id='file'>
         <legend>上传文件</legend>
         <input type="file" name="json-file" id="json-file" onChange={handleUpload} />
-        <button style={{ display: dlStatus ? '' : 'none' }} onClick={getExcel}>下载工作表</button>
+        <button style={{ display: dlStatus ? '' : 'none' }} onClick={handleDownload}>下载工作表</button>
       </fieldset>
 
       <fieldset>
