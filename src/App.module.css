@@ -23,6 +23,13 @@
   margin: 25px;
   padding: 25px;
 }
+:global li {
+  list-style: none;
+  margin-bottom: 1em;
+}
+:global li:last-child {
+  margin-bottom: 0;
+}
 :global #file {
   display: flex;
 }

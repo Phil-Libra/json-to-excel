@@ -93,20 +93,21 @@ const App = () => {
     <>
       <fieldset>
         <legend>说明</legend>
-        <p><a href="https://github.com/Phil-Libra/json-to-excel">源代码</a></p>
-        <br />
-        <p>生成的文件名格式：源文件名.xlsx</p>
-        <br />
-        <p>仅支持JSON文件上传。</p>
-        <br />
-        <p>由于限制，暂时只支持key value为简单数据类型的JSON，否则无法获取到相应的key value，且转换出的数据可能有bug。</p>
-        <br />
-        <p>暂时获取第一个子项的key为表头，不排除以后提供选择表头的功能。</p>
+        <ul>
+          <li><a href="https://github.com/Phil-Libra/json-to-excel">源代码</a></li>
+          <li>生成的文件名格式：源文件名.xlsx</li>
+          <li>仅支持JSON文件上传。</li>
+          <li>由于限制，暂时只支持key value为简单数据类型的JSON，否则无法获取到相应的key value，且转换出的数据可能有bug。</li>
+          <li>暂时获取第一个子项的key为表头，不排除以后提供选择表头的功能。</li>
+          <li><strong>因{'<input />'}标签本身限制，连续上传同一个文件请刷新页面后再上传。</strong></li>
+        </ul>
       </fieldset>
 
       <fieldset id='file'>
         <legend>上传文件</legend>
-        <input type="file" name="json-file" id="json-file" onChange={handleUpload} />
+        <label htmlFor="upload">
+          <input type="file" name="upload" id="upload" onChange={handleUpload} />
+        </label>
         <button style={{ display: dlStatus ? '' : 'none' }} onClick={handleDownload}>下载工作表</button>
       </fieldset>
 
