@@ -98,7 +98,7 @@ const App = () => {
           <li>生成的文件名格式：源文件名.xlsx</li>
           <li>仅支持JSON文件上传。</li>
           <li>由于限制，暂时只支持key value为简单数据类型的JSON，否则无法获取到相应的key value，且转换出的数据可能有bug。</li>
-          <li>暂时获取第一个子项的key为表头，不排除以后提供选择表头的功能。</li>
+          <li>表头为第一个子项的key。</li>
           <li><strong>因{'<input />'}标签本身限制，连续上传同一个文件请刷新页面后再上传。</strong></li>
         </ul>
       </fieldset>
